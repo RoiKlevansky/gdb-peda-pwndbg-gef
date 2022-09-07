@@ -1,5 +1,6 @@
 define init-peda
 source ~/peda/peda.py
+source ~/peda-heap/peda.py
 end
 document init-peda
 Initializes the PEDA (Python Exploit Development Assistant for GDB) framework

@@ -48,6 +48,23 @@ else
     git clone https://github.com/longld/peda.git "${dest_path}peda"
 fi
 
+
+# download peda-heap and decide whether to overwrite if exists
+if [ -d "${dest_path}peda-heap" ] || [ -h ~/.peda ]; then
+    echo "[-] PEDA-Heap found"
+    read -p "skip download to continue? (enter 'y' or 'n') " skip_peda_heap
+
+    if [ $skip_peda_heap = 'n' ]; then
+        rm -rf "${dest_path}peda-heap"
+        git clone https://github.com/Mipu94/peda-heap.git "${dest_path}peda-heap"
+    else
+        echo "PEDA-Heap skipped"
+    fi
+else
+    echo "[+] Downloading PEDA-Heap..."
+    git clone https://github.com/Mipu94/peda-heap.git "${dest_path}peda-heap"
+fi
+
 # download peda arm
 if [ -d "${dest_path}peda-arm" ] || [ -h ~/.peda ]; then
     echo "[-] PEDA ARM found"
@@ -86,9 +103,21 @@ else
     ./setup.sh
 fi
 
-# download gef FIXME: This aint right.
-echo "[+] Downloading GEF..."
-git clone https://github.com/hugsy/gef.git "${dest_path}gef"
+# download gef and decide whether to overwrite if exists
+if [ -d "${dest_path}gef" ] || [ -h ~/.gef ]; then
+    echo "[-] GEF found"
+    read -p "skip download to continue? (enter 'y' or 'n') " skip_gef
+
+    if [ $skip_gef = 'n' ]; then
+        rm -rf "${dest_path}gef"
+        git clone https://github.com/hugsy/gef.git "${dest_path}gef"
+    else
+        echo "GEF skipped"
+    fi
+else
+    echo "[+] Downloading GEF..."
+    git clone https://github.com/hugsy/gef.git "${dest_path}gef"
+fi
 
 cd $installer_path
 
