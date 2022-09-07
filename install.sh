@@ -94,6 +94,7 @@ cd $installer_path
 
 echo "[+] Setting .gdbinit..."
 cp gdbinit ~/.gdbinit
+sed -i "s%^source ~/%source ${dest_path}%g" ~/.gdbinit
 
 {
   echo "[+] Creating files..."
