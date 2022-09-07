@@ -1,13 +1,30 @@
-#!/bin/sh
+#!/bin/bash
+
+DEST_FILE="${PWD}/.install_path"
 
 installer_path=$PWD
+dest_path="${1:-"${HOME}"}"	# Installation destination path
+dest_path="${dest_path%/}/"	# Add trailing slash if needed
+
+echo "[+] Checking access to ${dest_path}..."
+if [[ ! -e "${dest_path}" ]]; then
+	echo "[-] Destination doesn't exist! Aborting..." 1>&2
+	exit 1
+elif [[ ! -w "${dest_path}" ]]; then
+	echo "[-] Can't write to destination! Aborting..." 1>&2
+	exit 1
+else
+	echo -n "${dest_path}" > "${DEST_FILE}"
+	echo "[-] Destination exists and writeable"
+fi
 
 echo "[+] Checking for required dependencies..."
-if command -v git >/dev/null 2>&1 ; then
+if command -v git > /dev/null 2>&1; then
     echo "[-] Git found!"
 else
-    echo "[-] Git not found! Aborting..."
-    echo "[-] Please install git and try again."
+    echo "[-] Git not found! Aborting..." 1>&2
+    echo "[-] Please install git and try again." 1>&2
+    exit 1
 fi
 
 if [ -f ~/.gdbinit ] || [ -h ~/.gdbinit ]; then
@@ -16,62 +33,62 @@ if [ -f ~/.gdbinit ] || [ -h ~/.gdbinit ]; then
 fi
 
 # download peda and decide whether to overwrite if exists
-if [ -d ~/peda ] || [ -h ~/.peda ]; then
+if [ -d "${dest_path}peda" ] || [ -h ~/.peda ]; then
     echo "[-] PEDA found"
     read -p "skip download to continue? (enter 'y' or 'n') " skip_peda
 
     if [ $skip_peda = 'n' ]; then
-        rm -rf ~/peda
-        git clone https://github.com/longld/peda.git ~/peda
+        rm -rf "${dest_path}peda"
+        git clone https://github.com/longld/peda.git "${dest_path}peda"
     else
         echo "PEDA skipped"
     fi
 else
     echo "[+] Downloading PEDA..."
-    git clone https://github.com/longld/peda.git ~/peda
+    git clone https://github.com/longld/peda.git "${dest_path}peda"
 fi
 
 # download peda arm
-if [ -d ~/peda-arm ] || [ -h ~/.peda ]; then
+if [ -d "${dest_path}peda-arm" ] || [ -h ~/.peda ]; then
     echo "[-] PEDA ARM found"
     read -p "skip download to continue? (enter 'y' or 'n') " skip_peda
 
     if [ $skip_peda = 'n' ]; then
-        rm -rf ~/peda-arm
-	git clone https://github.com/alset0326/peda-arm.git
+        rm -rf "${dest_path}peda-arm"
+	git clone https://github.com/alset0326/peda-arm.git "${dest_path}peda-arm"
     else
 	echo "PEDA ARM skipped"
     fi
 else	    
     echo "[+] Downloading PEDA ARM..."
-    git clone https://github.com/alset0326/peda-arm.git ~/peda-arm
+    git clone https://github.com/alset0326/peda-arm.git "${dest_path}peda-arm"
 fi
 
 # download pwndbg
-if [ -d ~/pwndbg ] || [ -h ~/.pwndbg ]; then
+if [ -d "${dest_path}pwndbg" ] || [ -h ~/.pwndbg ]; then
     echo "[-] Pwndbg found"
     read -p "skip download to continue? (enter 'y' or 'n') " skip_pwndbg
 
     if [ $skip_pwndbg = 'n' ]; then
-        rm -rf ~/pwndbg
-        git clone https://github.com/pwndbg/pwndbg.git ~/pwndbg
+        rm -rf "${dest_path}pwndbg"
+        git clone https://github.com/pwndbg/pwndbg.git "${dest_path}pwndbg"
 
-        cd ~/pwndbg
+        cd "${dest_path}pwndbg"
         ./setup.sh
     else
         echo "Pwndbg skipped"
     fi
 else
     echo "[+] Downloading Pwndbg..."
-    git clone https://github.com/pwndbg/pwndbg.git ~/pwndbg
-
-    cd ~/pwndbg
+    git clone https://github.com/pwndbg/pwndbg.git "${dest_path}pwndbg"
+    
+    cd "${dest_path}pwndbg"
     ./setup.sh
 fi
 
-# download gef
+# download gef FIXME: This aint right.
 echo "[+] Downloading GEF..."
-git clone https://github.com/hugsy/gef.git ~/gef
+git clone https://github.com/hugsy/gef.git "${dest_path}gef"
 
 cd $installer_path
 
