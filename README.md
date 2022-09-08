@@ -27,5 +27,5 @@ cd ~/gdb-peda-pwndbg-gef
 ## Update
 
 ```
-./update.sh
+./update.sh [destination]
 ```
